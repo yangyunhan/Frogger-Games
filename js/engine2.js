@@ -28,6 +28,31 @@ let Engine = function(global) {
     function init() {
         lastTime = Date.now();
         background();
+        playerInit();
+        playerSelect();
+    }
+
+    /**
+     * @description init player even through it not be selected
+     */
+    function playerInit() {
+        const roleImages = [
+            'images/char-boy.png',
+            'images/char-cat-girl.png',
+            'images/char-horn-girl.png',
+            'images/char-pink-girl.png',
+            'images/char-princess-girl.png'
+        ];
+        let index = Math.floor(Math.random()*roleImages.length);
+        player.reset();
+        player.sprite = roleImages[index];
+        player.render();
+    }
+
+    /**
+     * @description player select function
+     */
+    function playerSelect() {
         const play = $('.start-btn');
         play.bind('click',function (e) {
             start = true;
@@ -37,7 +62,6 @@ let Engine = function(global) {
             $(e.target)[0].className = 'start-btn disappear';
         });
     }
-
     /**
      * @description update all entities
      * @param dt
