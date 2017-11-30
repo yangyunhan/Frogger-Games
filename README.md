@@ -12,8 +12,7 @@ Frog crossing the river is a classic arcade game.
 
 ## Play Method
 **************
-- Click the link:[]()
-- Clone this repository to your local place, and open `index.html` in your browser.
+Clone this repository to your local place, and open `index.html` in your browser.
 And you can enjoy it!
 ## Personalized settings
 **************
