@@ -1,10 +1,10 @@
-var MAX_SPEED = 200;
-var MIDDLE_SPEED = 150;
-var MIN_SPEED = 50;
-var clothx = 101;
-var clothy = 83;
-var clothmiddle = 55;
-var speed = [MAX_SPEED, MIN_SPEED, MIDDLE_SPEED];
+const MAX_SPEED = 200;
+const MIDDLE_SPEED = 150;
+const MIN_SPEED = 50;
+const clothx = 101;
+const clothy = 83;
+const clothmiddle = 55;
+const speed = [MAX_SPEED, MIN_SPEED, MIDDLE_SPEED];
 
 /**
  * @description father class: People
@@ -12,13 +12,15 @@ var speed = [MAX_SPEED, MIN_SPEED, MIDDLE_SPEED];
  * @param y
  * @constructor
  */
-function People(x,y){
-    this.x = x;
-    this.y = y;
-};
-
-People.prototype.render = function () {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+let People = class People {
+    constructor(x,y,sprite){
+        this.x = x;
+        this.y = y;
+        this.sprite = sprite;
+    }
+    render(){
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
 };
 
 /**
@@ -27,16 +29,15 @@ People.prototype.render = function () {
  * @param y
  * @constructor
  */
-function Rock(x,y) {
-    People.call(this,x,y);
-    this.sprite = 'images/Rock.png';
-};
-Rock.prototype = new People();
-Rock.prototype.constructor = Rock;
-Rock.prototype.update = function () {
-    ctx.drawImage(Resources.get(this.sprite),this.x,this.y);
-};
-
+class Rock extends People{
+    constructor(x,y){
+        super(x,y);
+        this.sprite = 'images/Rock.png';
+    }
+    update(){
+        ctx.drawImage(Resources.get(this.sprite),this.x,this.y);
+    }
+}
 /**
  * @description subclass: Enemy
  * @param x
@@ -44,30 +45,28 @@ Rock.prototype.update = function () {
  * @param speed
  * @constructor
  */
-function Enemy(x,y,speed) {
-    People.call(this,x,y);
-    this.speed = speed;
-    this.sprite = 'images/enemy-bug.png';
-};
-Enemy.prototype = new People();
-Enemy.prototype.constructor = Enemy;
-Enemy.prototype.update = function(dt) {
-    this.x += dt * this.speed;
-    if (this.x>=5 * clothx) this.x = -50;
-    if(this.checkCollision(player)){
-        return nCollision;
+class Enemy extends People{
+    constructor(x,y,speed){
+        super(x,y);
+        this.speed = speed;
+        this.sprite = 'images/enemy-bug.png';
     }
-};
-Enemy.prototype.checkCollision = function (player) {
-    var distance=Math.abs(this.x-player.x);
-    if(this.y === player.y && distance <= 50){
-        player.x = 2 * clothx;
-        player.y = 4 * clothy + clothmiddle;
-        nCollision ++;
-        return nCollision;
+    checkCollision(player){
+        let distance = Math.abs(this.x - player.x);
+        if (this.y === player.y && distance <= 50){
+            player.reset();
+            return true;
+        }
     }
-};
+    update(dt){
+        this.x += dt * this.speed;
+        if (this.x >= 5 * clothx) this.x = -50;
+        if (this.checkCollision(player)){
+            return true;
+        }
+    }
 
+}
 /**
  * @description subclass: Player
  * @param x
@@ -75,53 +74,54 @@ Enemy.prototype.checkCollision = function (player) {
  * @param sprite
  * @constructor
  */
-function Player (x,y,sprite) {
-    People.call(this,x,y);
-    this.sprite = sprite;
-};
-Player.prototype = new People();
-Player.prototype.constructor = Player;
-Player.prototype.render = function () {
-    if(player.y >= clothmiddle && player.y <= 4 * clothy + clothmiddle){
-        ctx.drawImage(Resources.get(this.sprite),this.x,this.y);
+
+class Player extends People{
+    constructor(x,y,sprite){
+        super(x,y);
+        this.sprite = sprite;
     }
-};
-Player.prototype.update = function () {
-    if(this.x >= 4 * clothx){
-        this.x = 4 * clothx;
-    }else if(this.x <= 0){
-        this.x = 0;
+    render(){
+        super.render();
+        if(player.y >= clothmiddle && player.y <= 4 * clothy + clothmiddle){
+            ctx.drawImage(Resources.get(this.sprite),this.x,this.y);
+        }
     }
-    if(this.y <= clothmiddle){
-        this.y = clothmiddle;
-        setTimeout(function () {
-            player.reset();
-        },500);
-        var scoreNum = $('.score-num')[0].firstChild.nodeValue;
-        score = Number(scoreNum);
-        score += 400;
-        if(scoreNum){
-            $('.score-num')[0].firstChild.nodeValue = '';
-            $('.score-num')[0].firstChild.nodeValue = score;
-            if(score > 1000){
-                gameReset('.success','success');
+    update(){
+        if(this.x >= 4 * clothx){
+            this.x = 4 * clothx;
+        }else if(this.x <= 0){
+            this.x = 0;
+        }
+        if(this.y <= clothmiddle){
+            this.y = clothmiddle;
+            setTimeout(function () {
+                player.reset();
+            },500);
+            let scoreNum = $('.score-num')[0].firstChild.nodeValue;
+            score = Number(scoreNum);
+            score += 400;
+            if(scoreNum){
+                $('.score-num')[0].firstChild.nodeValue = '';
+                $('.score-num')[0].firstChild.nodeValue = score;
+                if(score > 1000){
+                    gameReset('.success','success');
+                }
             }
+            playNum ++;
+            addDifficulty(playNum,1,2);
+            if(playNum === 2){
+                playNum = 0;
+            }
+        }else if(this.y >= 4 * clothy + clothmiddle){
+            this.y = 4 * clothy + clothmiddle;
         }
-        playNum ++;
-        if(playNum === 2){
-            playNum = 0;
-        }
-        addDifficulty(playNum,1,2);
-    }else if(this.y >= 4 * clothy + clothmiddle){
-        this.y = 4 * clothy + clothmiddle;
     }
-};
-Player.prototype.handleInput = function (movement) {
-    if(allRocks.length >= 1){
-        var rock  = allRocks[allRocks.length-1];
-        var statex = (rock.x === player.x);
-        var statey = (rock.y === player.y);
-        switch (movement){
+    handleInput(movement){
+        if(allRocks.length >= 1){
+            let rock  = allRocks[allRocks.length-1];
+            let statex = (rock.x === player.x);
+            let statey = (rock.y === player.y);
+            switch (movement){
                 case 'left':
                 {
                     if(statey && rock.x + clothx === player.x){
@@ -151,40 +151,38 @@ Player.prototype.handleInput = function (movement) {
                     }else {player.y += clothy;}
                     break;
                 }
+            }
+        }else{
+            switch (movement){
+                case 'left':
+                {
+                    this.x -= clothx;
+                    break;
+                }
+                case 'right':
+                {
+                    this.x += clothx;
+                    break;
+                }
+                case 'up':
+                {
+                    this.y -= clothy;
+                    break;
+                }
+                case 'down':
+                {
+                    this.y += clothy;
+                    break;
+                }
+            }
         }
-    }else{
-        switch (movement){
-            case 'left':
-            {
-                console.log('turn left');
-                this.x -= clothx;
-                break;
-            }
-            case 'right':
-            {
-                console.log('turn right');
-                this.x += clothx;
-                break;
-            }
-            case 'up':
-            {
-                this.y -= clothy;
-                break;
-            }
-            case 'down':
-            {
-                this.y += clothy;
-                break;
-            }
-        }
+        player.update();
     }
-    player.update();
-};
-Player.prototype.reset = function () {
-    player.x = 2 * clothx;
-    player.y = 4 * clothy + clothmiddle;
-};
-
+    reset(){
+        player.x = 2 * clothx;
+        player.y = 4 * clothy + clothmiddle;
+    }
+}
 var allRocks = [];
 var allEnemies = [];
 /**
@@ -192,24 +190,22 @@ var allEnemies = [];
  * @param ENEMY_LENGTH
  */
 function enemyGenerator(ENEMY_LENGTH) {
-    var row_index = getRandomArr(3,2);
-    var cols_index = getRandomArr(3,2);
-    var speed_index = getRandomArr(3,2);
-    for(var i = 0;i < ENEMY_LENGTH;i++){
-        var enemy = new Enemy(row_index[i] * clothx, cols_index[i] * clothy + clothmiddle, speed[speed_index[i]]);
+    let row_index = getRandomArr(3,2);
+    let cols_index = getRandomArr(3,2);
+    let speed_index = getRandomArr(3,2);
+    for(let i = 0;i < ENEMY_LENGTH;i++){
+        let enemy = new Enemy(row_index[i] * clothx, cols_index[i] * clothy + clothmiddle, speed[speed_index[i]]);
         allEnemies.push(enemy);
     }
 }
 enemyGenerator(3);
 
-var score = 0;
-var playNum = 0;
-var player = new Player();
+let score = 0;
+let playNum = 0;
+let player = new Player();
 
-// 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
-// 方法里面。你不需要再更改这段代码了。
 document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
+    const allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',

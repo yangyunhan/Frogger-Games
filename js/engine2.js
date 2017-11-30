@@ -1,5 +1,5 @@
-var Engine = function(global) {
-    var win = global.window,
+let Engine = function(global) {
+    let win = global.window,
         canvas = document.getElementById('myCanvas'),
         ctx = canvas.getContext('2d'),
         nCollision = 0,
@@ -13,7 +13,7 @@ var Engine = function(global) {
      * @description main function: render entities and request animation
      */
     function main() {
-        var now = Date.now(),
+        let now = Date.now(),
             dt = (now - lastTime) / 1000.0;
         render();
         renderEntities();
@@ -27,8 +27,8 @@ var Engine = function(global) {
      */
     function init() {
         lastTime = Date.now();
-        background();//
-        var play = $('.start-btn');
+        background();
+        const play = $('.start-btn');
         play.bind('click',function (e) {
             start = true;
             if(start){
@@ -57,7 +57,8 @@ var Engine = function(global) {
                 nCollision ++;
                 $('.heart-num ul li')[3-nCollision].className = 'disappear';
                 if(nCollision % 3 === 0){
-                    if(score > 1000){
+                    if(Number(score) > 1000){
+                        gameReset('.success','success');
                         $('.over')[0].className = 'disappear';
                     }
                     gameReset('.over','over');
@@ -88,7 +89,7 @@ var Engine = function(global) {
      * @description render function
      */
     function render() {
-        var rowImages = [
+        const rowImages = [
                 'images/water-block.png',   // 这一行是河
                 'images/stone-block.png',   // 第一行石头
                 'images/stone-block.png',   // 第二行石头
@@ -97,8 +98,8 @@ var Engine = function(global) {
                 'images/grass-block.png'    // 第二行草地
             ],
             numRows = 6,
-            numCols = 5,
-            row, col;
+            numCols = 5;
+        let row, col;
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * clothx, row * clothy);

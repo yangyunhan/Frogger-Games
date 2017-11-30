@@ -1,7 +1,7 @@
 $(document).ready(function () {
-    var instructionBtn = $('.instruction-btn');
-    var instructionMsg = $('.instruction-msg');
-    var confirm = $('.confirm');
+    const instructionBtn = $('.instruction-btn');
+    const instructionMsg = $('.instruction-msg');
+    const confirm = $('.confirm');
     instructionBtn.bind("click",function () {
         instructionMsg[0].className = 'instruction-msg';
     });
@@ -59,14 +59,14 @@ function gameReset(selector,msg) {
  * @returns {Array}
  */
 function getRandomArr(len,max) {
-    var sub_arr = new Array();//生成的随机数数组
-    var has_arr = new Array();//稀疏数组，判断该数字是否已经选出
-    var temp = '';
-    for (var i = 0; i <=len-1; i++) {
+    let sub_arr = new Array();//random array
+    let has_arr = new Array();//array that whether the number is picked
+    let temp = '';
+    for (let i = 0; i <=len-1; i++) {
         do {
             temp = getRandomNum(0, max);
-        } while (has_arr[temp] !== undefined)//判断该选出的数字是否已经选出
-        has_arr[temp] = 'has';//该数字作为偏移量，加入稀疏数组记录为已选
+        } while (has_arr[temp] !== undefined)//whether the number is picked
+        has_arr[temp] = 'has';//picked symbol
         sub_arr[i] = temp;
     }
     return sub_arr;
